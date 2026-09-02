@@ -1,0 +1,280 @@
+/* Estilos compartidos para todas las lecciones y documentos de referencia.
+   Inspiración: Edward Tufte. Cero dependencias externas. Imprimible. */
+
+:root {
+  --bg: #fdfaf3;
+  --ink: #1a1a1a;
+  --ink-muted: #555;
+  --rule: #d9d2c1;
+  --accent: #8b3a1c;      /* terracota, para acentos raros y controlados */
+  --accent-soft: #f2e7d5;
+  --good: #2d6b3a;
+  --bad: #8a2a2a;
+  --code-bg: #f2ecdc;
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "URW Palladio L", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.55;
+  max-width: 720px;
+  margin: 3rem auto 6rem;
+  padding: 0 1.75rem;
+  hyphens: auto;
+  text-rendering: optimizeLegibility;
+}
+
+/* Cabecera de lección o documento */
+header.doc-head {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+header.doc-head .kicker {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.5rem;
+}
+
+h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: 1.15;
+  margin: 0 0 0.4rem;
+}
+
+header.doc-head .subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-muted);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.4rem;
+  margin: 2.5rem 0 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.3rem;
+}
+
+h3 {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 1.6rem 0 0.4rem;
+}
+
+p { margin: 0.75rem 0; }
+
+strong { font-weight: 600; }
+em { font-style: italic; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+a:hover { border-bottom-color: var(--accent); }
+
+ul, ol {
+  padding-left: 1.4rem;
+  margin: 0.8rem 0;
+}
+li { margin: 0.35rem 0; }
+
+/* Bloques semánticos */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 1rem 1.2rem;
+  margin: 1.6rem 0;
+  font-size: 0.95rem;
+}
+.callout .label {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.do-dont {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.4rem 0;
+}
+.do, .dont {
+  padding: 0.9rem 1rem;
+  border-radius: 3px;
+  font-size: 0.95rem;
+}
+.do  { border-left: 3px solid var(--good); background: #eef4ec; }
+.dont { border-left: 3px solid var(--bad); background: #f5eaea; }
+.do h4, .dont h4 {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 0.4rem;
+}
+.do h4 { color: var(--good); }
+.dont h4 { color: var(--bad); }
+
+/* Pasos numerados */
+ol.steps {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: step;
+}
+ol.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 0.6rem 0 0.6rem 3rem;
+  border-top: 1px solid var(--rule);
+}
+ol.steps > li:last-child { border-bottom: 1px solid var(--rule); }
+ol.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  font-family: var(--sans);
+  font-size: 1.4rem;
+  color: var(--accent);
+  width: 2.2rem;
+  text-align: right;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.4rem 0;
+  font-size: 0.95rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+th {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border-bottom: 2px solid var(--ink);
+}
+
+/* Quiz */
+.quiz {
+  border: 1px solid var(--rule);
+  padding: 1.2rem 1.4rem;
+  margin: 2rem 0;
+  border-radius: 4px;
+  background: #fffaef;
+}
+.quiz h3 {
+  margin-top: 0;
+  color: var(--accent);
+}
+.quiz .question { font-weight: 600; margin-bottom: 0.6rem; }
+.quiz ul { list-style: none; padding: 0; }
+.quiz li {
+  margin: 0.3rem 0;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  cursor: pointer;
+  background: var(--bg);
+  transition: background 0.15s;
+}
+.quiz li:hover { background: var(--accent-soft); }
+.quiz li.correct   { background: #e4f0e0; border-color: var(--good); }
+.quiz li.incorrect { background: #f5e2e2; border-color: var(--bad); }
+.quiz .feedback {
+  margin-top: 0.8rem;
+  font-style: italic;
+  color: var(--ink-muted);
+  min-height: 1.4rem;
+}
+
+/* Cita / fuente */
+blockquote {
+  border-left: 3px solid var(--rule);
+  padding: 0.2rem 0 0.2rem 1rem;
+  margin: 1rem 0 1rem 0.4rem;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+cite {
+  font-style: normal;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+/* Cierre de lección */
+.lesson-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+.lesson-footer h3 { margin-top: 0.5rem; }
+.lesson-footer .ask {
+  margin-top: 1.5rem;
+  padding: 0.9rem 1rem;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  font-style: italic;
+  color: var(--ink);
+}
+
+nav.lesson-nav {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: 1.5rem;
+}
+nav.lesson-nav a { margin-right: 1.2rem; }
+
+/* Impresión */
+@media print {
+  body { background: white; color: black; max-width: 100%; margin: 0; padding: 1cm; font-size: 11pt; }
+  .quiz li { cursor: default; }
+  a { color: black; border-bottom: none; }
+  a::after { content: " (" attr(href) ")"; font-size: 8pt; color: #555; }
+  .lesson-footer .ask { break-inside: avoid; }
+}
+
+/* Móvil */
+@media (max-width: 560px) {
+  body { font-size: 17px; margin: 1.5rem auto 4rem; padding: 0 1rem; }
+  h1 { font-size: 1.7rem; }
+  .do-dont { grid-template-columns: 1fr; }
+}

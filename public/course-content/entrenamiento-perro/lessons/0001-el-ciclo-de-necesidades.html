@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lección 01 · El ciclo de necesidades</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/animations.css">
+</head>
+<body>
+
+<header class="doc-head">
+  <p class="kicker">Lección 01 · Necesidades fuera de casa</p>
+  <h1>El ciclo del cachorro: predecir, sacar, marcar, premiar</h1>
+  <p class="subtitle">Antes de enseñar nada, hay que reducir la probabilidad de accidentes a casi cero. Se hace con horario, no con retos.</p>
+</header>
+
+<h2>La idea en una frase</h2>
+
+<p>
+Un cachorro no aprende <em>a aguantar</em> — aprende <em>a dónde va la pipí</em>. Tu trabajo esta semana es
+lograr que <strong>cada vez que Platanito tenga ganas, esté en la calle</strong>. Cada acierto en la calle
+construye el hábito; cada accidente adentro lo debilita. Todo lo demás sale de aquí.
+</p>
+
+<h2>Cuánto aguanta Platanito</h2>
+
+<p>
+La regla que usa la <a href="https://www.akc.org/expert-advice/training/how-to-potty-train-a-puppy/">AKC</a>
+como aproximación:
+</p>
+
+<blockquote>
+"Puppies can generally hold their bladder for approximately the same number of hours as their age in months,
+up to about 9 months to 1 year of age." <cite>— Mara Bovsun, AKC (jul 2026)</cite>
+</blockquote>
+
+<p>
+Platanito tiene <strong>4 meses</strong>, así que en teoría aguanta unas 4 horas. En la práctica, como es
+raza pequeña y estamos formando el hábito, <strong>vamos a trabajar con salidas cada 2 horas de vigilia</strong>
+más las salidas gatillo que verás abajo. Ir con más margen del estrictamente necesario es lo que hace que este
+sistema funcione. Cuando el hábito esté sólido, se estiran los tiempos solos.
+</p>
+
+<h2>Los disparadores: no cuentes horas, cuenta eventos</h2>
+
+<p>
+El reloj es sólo una red de seguridad. La AKC identifica los momentos en que un cachorro tiene <strong>alta
+probabilidad</strong> de necesitar eliminar. Después de cualquiera de estos eventos, Platanito baja a la calle,
+aunque hayan pasado sólo 20 minutos desde la última salida:
+</p>
+
+<ul>
+  <li><strong>Al despertar</strong>, siempre (mañana, siestas cortas, siesta larga).</li>
+  <li><strong>Después de comer</strong> — para el pipí, casi inmediato; para la caca, típicamente entre 5 y 30 minutos.</li>
+  <li><strong>Después de beber</strong>.</li>
+  <li><strong>Después de jugar</strong> o de una sesión de entrenamiento animada.</li>
+  <li><strong>Después de estar un rato en su zona segura</strong> (jaula, corralito, cama en un rincón).</li>
+  <li>Antes de dormir por la noche.</li>
+</ul>
+
+<div class="callout">
+  <span class="label">Detalle de departamento sin patio</span>
+  Con Platanito viviendo en un piso alto, cada salida cuesta tiempo real (ascensor + escalera + puerta).
+  Eso es un problema — pero también es la razón por la que la <em>anticipación</em> importa más que en una casa
+  con jardín. La regla: si dudas si necesita salir, sal. Bajar por nada dos veces al día es un costo bajo;
+  un accidente adentro es un paso hacia atrás.
+</div>
+
+<h2>Qué haces exactamente en la calle</h2>
+
+<p>Este es el ciclo. Lo repites tal cual, en cada salida, todos los días de esta semana.</p>
+
+<figure class="anim">
+  <svg class="cycle-anim" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg"
+       role="img" aria-label="Cinco pasos en secuencia que se recorren en cada salida a la calle">
+    <defs>
+      <marker id="cyc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#d9d2c1"/>
+      </marker>
+    </defs>
+
+    <path class="cycle-arrow" d="M 104 70 L 172 70" marker-end="url(#cyc-arrow)"/>
+    <path class="cycle-arrow" d="M 244 70 L 312 70" marker-end="url(#cyc-arrow)"/>
+    <path class="cycle-arrow" d="M 384 70 L 452 70" marker-end="url(#cyc-arrow)"/>
+    <path class="cycle-arrow" d="M 524 70 L 592 70" marker-end="url(#cyc-arrow)"/>
+
+    <g class="cycle-step cycle-step-1">
+      <circle class="cycle-step-circle" cx="70" cy="70" r="34"/>
+      <text class="cycle-step-number" x="70" y="70">1</text>
+      <text class="cycle-step-label" x="70" y="130">Sacar</text>
+      <text class="cycle-step-label" x="70" y="148">al sitio</text>
+    </g>
+    <g class="cycle-step cycle-step-2">
+      <circle class="cycle-step-circle" cx="210" cy="70" r="34"/>
+      <text class="cycle-step-number" x="210" y="70">2</text>
+      <text class="cycle-step-label" x="210" y="130">Esperar</text>
+      <text class="cycle-step-label" x="210" y="148">en silencio</text>
+    </g>
+    <g class="cycle-step cycle-step-3">
+      <circle class="cycle-step-circle" cx="350" cy="70" r="34"/>
+      <text class="cycle-step-number" x="350" y="70">3</text>
+      <text class="cycle-step-label" x="350" y="130">Cue</text>
+      <text class="cycle-step-label" x="350" y="148">al empezar</text>
+    </g>
+    <g class="cycle-step cycle-step-4">
+      <circle class="cycle-step-circle" cx="490" cy="70" r="34"/>
+      <text class="cycle-step-number" x="490" y="70">4</text>
+      <text class="cycle-step-label" x="490" y="130">¡Sí! + premio</text>
+      <text class="cycle-step-label" x="490" y="148">al terminar</text>
+    </g>
+    <g class="cycle-step cycle-step-5">
+      <circle class="cycle-step-circle" cx="630" cy="70" r="34"/>
+      <text class="cycle-step-number" x="630" y="70">5</text>
+      <text class="cycle-step-label" x="630" y="130">Paseo</text>
+      <text class="cycle-step-label" x="630" y="148">de premio</text>
+    </g>
+  </svg>
+  <figcaption>El ciclo, en orden. Cada salida se ejecuta exactamente así.</figcaption>
+</figure>
+
+<ol class="steps">
+  <li>
+    <strong>Salir directo al sitio elegido.</strong> Elige un lugar fijo cerca del portal — un cuadro de tierra,
+    la base de un árbol, un rincón de la vereda. Ese lugar va a olerle a "aquí se hace pipí" muy pronto, y eso
+    juega a tu favor. En el trayecto, sin juegos, sin distracciones — llegas al sitio y te paras.
+  </li>
+  <li>
+    <strong>Espera en silencio.</strong> Hasta 5 minutos. Sin hablarle, sin acariciarlo, sin mirarlo mucho.
+    Que se aburra. El aburrimiento es lo que empuja al cachorro a hacer lo único interesante que puede hacer allí.
+  </li>
+  <li>
+    <strong>En el instante en que empieza a eliminar</strong>, susurras el <em>cue</em>: <strong>"haz pipí"</strong>
+    (elige tú la palabra — lo importante es que sea siempre la misma y siempre en voz calma). Este es el nombre
+    que va a tener la conducta cuando quieras pedirla.
+  </li>
+  <li>
+    <strong>En cuanto termine</strong>, marcador y premio: dices <strong>"¡sí!"</strong> con energía y le das
+    un premio pequeño, muy sabroso, inmediatamente. Elogio efusivo — voz aguda, aplausos si te sale. Este es el
+    momento en que se construye el hábito. No lo escatimes.
+  </li>
+  <li>
+    <strong>Ahora sí, jugar y pasear.</strong> El paseo, el olfateo, la libertad — todo eso viene <em>después</em>
+    de la pipí. Así el paseo se convierte en un segundo premio, no en un competidor de la conducta que
+    quieres reforzar.
+  </li>
+</ol>
+
+<div class="do-dont">
+  <div class="do">
+    <h4>Sí</h4>
+    <ul>
+      <li>Premio con comida sabrosa (queso, pollo, snack para cachorros) — llevas los premios en el bolsillo antes de abrir la puerta.</li>
+      <li>Marcador ("¡sí!") en menos de un segundo desde que termina.</li>
+      <li>Mismo sitio, misma palabra, misma rutina — durante las primeras 2–3 semanas.</li>
+    </ul>
+  </div>
+  <div class="dont">
+    <h4>No</h4>
+    <ul>
+      <li>Nunca regañes, grites, ni "restriegues el hocico" por un accidente dentro. No enseña nada útil y sí enseña miedo.</li>
+      <li>No premies al volver a casa (recompensa desconectada de la conducta). El premio se da <em>allí</em>, junto al pipí.</li>
+      <li>No dejes que Platanito descubra que hacer pipí adentro pasa desapercibido. Si lo pillas en el acto, lo interrumpes con un sonido corto (una palmada seca, no un grito) y lo cargas afuera de inmediato.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>El timing del "¡sí!" — importa al milisegundo</h2>
+
+<p>
+Esta es la parte que el texto no captura bien. El marcador tiene una <strong>ventana</strong>: justo
+al terminar el pipí. Antes interrumpe la conducta; después queda flotando sin conectarse a nada.
+Mira las tres situaciones:
+</p>
+
+<figure class="anim">
+  <svg class="timing-anim" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg"
+       role="img" aria-label="Tres intentos de marcador con timing distinto: temprano, perfecto y tarde.">
+    <!-- Story-time axis and pee bar -->
+    <text class="tim-caption" x="240" y="140" text-anchor="middle" style="font-weight:600;">Platanito orina</text>
+    <rect class="tim-pee-bar" x="100" y="150" width="280" height="30" rx="4"/>
+    <!-- Green "correct" window at the end of the pee -->
+    <rect class="tim-window" x="340" y="146" width="50" height="38" rx="3"/>
+    <text class="tim-caption" x="440" y="140" style="font-size:10px;">ventana correcta</text>
+
+    <!-- Elevator zone (right side, off the pee bar) -->
+    <text class="tim-caption" x="560" y="140" text-anchor="middle" style="font-weight:600;">En el ascensor</text>
+    <rect class="tim-track" x="500" y="150" width="140" height="30" rx="4" opacity="0.5"/>
+
+    <!-- Time ticks -->
+    <line class="tim-tick" x1="100" y1="190" x2="100" y2="200"/>
+    <line class="tim-tick" x1="380" y1="190" x2="380" y2="200"/>
+    <line class="tim-tick" x1="560" y1="190" x2="560" y2="200"/>
+    <text class="tim-tick-label" x="100" y="213">empieza pipí</text>
+    <text class="tim-tick-label" x="380" y="213">termina pipí</text>
+    <text class="tim-tick-label" x="560" y="213">de vuelta a casa</text>
+
+    <!-- Three falling markers -->
+    <g class="tim-marker tim-marker-early">
+      <text x="200" y="90">"¡sí!"</text>
+      <line x1="200" y1="100" x2="200" y2="150" stroke="#8a2a2a" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <text class="badge" x="60" y="245">✗ demasiado pronto → Platanito se sobresalta y corta la pipí</text>
+    </g>
+    <g class="tim-marker tim-marker-good">
+      <text x="380" y="90">"¡sí!"</text>
+      <line x1="380" y1="100" x2="380" y2="150" stroke="#2d6b3a" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <text class="badge" x="60" y="245">✓ justo al terminar → premio inmediato, hábito consolidado</text>
+    </g>
+    <g class="tim-marker tim-marker-late">
+      <text x="560" y="90">"¡sí!"</text>
+      <line x1="560" y1="100" x2="560" y2="150" stroke="#555" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <text class="badge" x="60" y="245">✗ desconectado — Platanito no sabe qué premiaste</text>
+    </g>
+  </svg>
+  <figcaption>Un mismo pipí, tres timings distintos. Sólo el del centro construye el hábito.</figcaption>
+</figure>
+
+<p>
+Regla de bolsillo: menos de <strong>un segundo</strong> desde que termina hasta el "¡sí!". El premio
+puede llegar dos o tres segundos después — lo que <em>no</em> puede llegar tarde es el marcador. Por eso
+lo llevamos en la boca, no en el bolsillo.
+</p>
+
+<h2>Y si hay un accidente adentro</h2>
+
+<p>
+Habrá accidentes. Son datos, no fracasos. La respuesta técnica:
+</p>
+
+<ol>
+  <li><strong>Limpia con un producto enzimático</strong> (venden específicos para orina de mascotas). Los productos con amoníaco huelen a orina para el perro y lo invitan a volver al mismo sitio.</li>
+  <li><strong>Anota qué falló en el manejo</strong> — ¿te saltaste una salida? ¿jugó mucho y no lo sacaste después? ¿bebió agua hace 15 minutos y estabas distraído? El accidente casi siempre se explica.</li>
+  <li><strong>Ajusta el horario mañana</strong> con lo que aprendiste. La responsabilidad del accidente es del entrenador, no del cachorro.</li>
+</ol>
+
+<h2>Compruébalo</h2>
+
+<div class="quiz" data-quiz>
+  <h3>Mini-quiz</h3>
+  <p class="question">1. Son las 3 de la tarde. Platanito acaba de despertar de una siesta de 40 minutos. Salió a la calle a las 2:15 y todo salió bien. ¿Qué haces?</p>
+  <ul>
+    <li data-correct="false" data-feedback="Han pasado sólo 45 minutos, pero despertarse es un disparador — la vejiga se llena más rápido al despertar. Cuenta eventos, no relojes.">Esperar a que se cumplan las 2 horas.</li>
+    <li data-correct="true" data-feedback="Correcto. Despertar es un disparador de alta probabilidad. Aunque acabe de bajar, sale otra vez.">Bajar a la calle ahora mismo, aunque acabe de salir.</li>
+    <li data-correct="false" data-feedback="Los pads dentro entrenan al perro a hacer pipí dentro. No es lo que queremos para Platanito.">Poner un pad en el pasillo por si acaso.</li>
+  </ul>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-quiz>
+  <p class="question">2. Estás en la calle con Platanito. Empieza a hacer pipí. ¿Cuándo dices "¡sí!" y le das el premio?</p>
+  <ul>
+    <li data-correct="false" data-feedback="Demasiado tarde: al volver a casa la conducta ya está desconectada del premio. El cachorro no sabrá qué premiaste.">Al volver a casa, cuando entras al ascensor.</li>
+    <li data-correct="false" data-feedback="Demasiado pronto: si dice 'sí' antes de terminar, puede cortar el pipí. El marcador va al terminar, para reforzar la conducta completa.">En el instante en que empieza a orinar.</li>
+    <li data-correct="true" data-feedback="Correcto. Cue calmado ('haz pipí') cuando empieza; marcador ('¡sí!') y premio en el instante en que termina.">En el instante en que termina de orinar.</li>
+  </ul>
+  <p class="feedback"></p>
+</div>
+
+<div class="quiz" data-quiz>
+  <p class="question">3. Encuentras un charco de pipí en la sala. Platanito está durmiendo en su cama a 3 metros. ¿Qué haces?</p>
+  <ul>
+    <li data-correct="false" data-feedback="No sirve. El perro no asocia el regaño con algo que hizo hace 20 minutos. Sólo aprende que tu presencia y la orina en el mismo sitio = peligro, lo que le enseña a esconderse para hacer pipí.">Lo llamas, le enseñas el charco y lo regañas.</li>
+    <li data-correct="true" data-feedback="Correcto. Limpia con enzimático, anota qué salida se te saltó, ajusta el horario para mañana. El accidente es información sobre tu manejo, no sobre Platanito.">Limpias con producto enzimático y anotas qué falló en tu horario.</li>
+    <li data-correct="false" data-feedback="La 'jaula como castigo' rompe uno de los principios que hacen útil la zona segura: nunca debe asociarse con algo malo, o el perro empezará a ensuciarla también.">Lo despiertas y lo metes en su zona segura como castigo.</li>
+  </ul>
+  <p class="feedback"></p>
+</div>
+
+<h2>Tu tarea, hoy mismo</h2>
+
+<ol>
+  <li>Elige el <strong>cue</strong> ("haz pipí" o el que prefieras) y comunícalo a todos los humanos de la casa. Todos usan la misma palabra.</li>
+  <li>Elige el <strong>sitio fijo</strong> en la calle. Escríbelo en <code>NOTES.md</code> si te ayuda.</li>
+  <li>Deja preparados los <strong>premios</strong> en un recipiente cerrado, junto a la puerta o en el bolsillo del abrigo con el que sales. Sin premio-en-mano no hay refuerzo.</li>
+  <li>Imprime o abre <a href="../reference/horario-diario.html">el horario diario de referencia</a> y pégalo en la nevera.</li>
+</ol>
+
+<footer class="lesson-footer">
+  <h3>Fuente primaria recomendada</h3>
+  <p>
+    Léete completo el paso a paso original de la AKC:
+    <a href="https://www.akc.org/expert-advice/training/how-to-potty-train-a-puppy/">How to Potty Train a Puppy: A Step-by-Step Guide for New Owners</a>
+    (Mara Bovsun, actualizado jul 2026). Es la base de esta lección.
+  </p>
+
+  <h3>Próxima lección (borrador)</h3>
+  <p>
+    <em>Lección 02: El nombre y el contacto visual — la primera conducta obediente de Platanito.</em>
+    Cinco minutos al día, tres días, y responde a su nombre como un profesional.
+  </p>
+
+  <div class="ask">
+    ¿Algo no encaja con tu departamento, tu horario, o Platanito específicamente?
+    Habla conmigo antes de improvisar. Soy tu profesor para este curso: los detalles concretos de tu situación
+    (una escalera muy larga, un vecino ruidoso, otro perro en la casa) cambian el plan, y prefiero ajustarlo contigo que verlo fallar.
+  </div>
+
+  <nav class="lesson-nav">
+    <a href="../MISSION.md">Misión</a>
+    <a href="../GLOSSARY.md">Glosario</a>
+    <a href="../reference/horario-diario.html">Horario diario</a>
+  </nav>
+</footer>
+
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

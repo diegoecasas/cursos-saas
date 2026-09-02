@@ -1,0 +1,156 @@
+/* Animaciones inline en SVG + CSS. Cero red, cero dependencias.
+   Todas respetan prefers-reduced-motion: pausan y muestran el frame final útil. */
+
+/* ─────────────────────────────────────────────────────────────
+   Contenedor común
+   ───────────────────────────────────────────────────────────── */
+figure.anim {
+  margin: 2rem 0;
+  padding: 1.2rem;
+  border: 1px solid var(--rule);
+  background: #fffdf6;
+  border-radius: 4px;
+}
+figure.anim figcaption {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: 0.9rem;
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Animación 1 — El ciclo de 5 pasos
+   ───────────────────────────────────────────────────────────── */
+.cycle-anim { width: 100%; height: auto; display: block; }
+
+.cycle-step-circle {
+  fill: var(--bg);
+  stroke: var(--rule);
+  stroke-width: 2;
+  transform-origin: center;
+  animation: cycle-pulse 10s linear infinite;
+}
+.cycle-step-number {
+  font-family: var(--sans);
+  font-size: 20px;
+  font-weight: 600;
+  fill: var(--ink-muted);
+  text-anchor: middle;
+  dominant-baseline: central;
+  animation: cycle-num 10s linear infinite;
+}
+.cycle-step-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  fill: var(--ink);
+  text-anchor: middle;
+}
+.cycle-arrow { stroke: var(--rule); stroke-width: 2; fill: none; }
+
+/* Delay escalonado por paso (cada uno tiene 2s de "activo" en un ciclo de 10s) */
+.cycle-step-1 .cycle-step-circle, .cycle-step-1 .cycle-step-number { animation-delay:  0s; }
+.cycle-step-2 .cycle-step-circle, .cycle-step-2 .cycle-step-number { animation-delay: -8s; }
+.cycle-step-3 .cycle-step-circle, .cycle-step-3 .cycle-step-number { animation-delay: -6s; }
+.cycle-step-4 .cycle-step-circle, .cycle-step-4 .cycle-step-number { animation-delay: -4s; }
+.cycle-step-5 .cycle-step-circle, .cycle-step-5 .cycle-step-number { animation-delay: -2s; }
+
+@keyframes cycle-pulse {
+  0%, 20%   { fill: var(--accent); stroke: var(--accent); transform: scale(1.15); }
+  25%, 100% { fill: var(--bg);     stroke: var(--rule);   transform: scale(1); }
+}
+@keyframes cycle-num {
+  0%, 20%   { fill: #fff; }
+  25%, 100% { fill: var(--ink-muted); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Animación 2 — Timing del marcador
+   ───────────────────────────────────────────────────────────── */
+.timing-anim { width: 100%; height: auto; display: block; }
+
+.tim-track      { fill: #ece5d0; }
+.tim-pee-bar    { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.tim-window     { fill: rgba(45, 107, 58, 0.15); stroke: var(--good); stroke-dasharray: 4 3; stroke-width: 1.5; }
+.tim-tick       { stroke: var(--ink-muted); stroke-width: 1; }
+.tim-tick-label { font-family: var(--sans); font-size: 10px; fill: var(--ink-muted); text-anchor: middle; }
+.tim-caption    { font-family: var(--sans); font-size: 11px; letter-spacing: 0.04em; fill: var(--ink); }
+
+/* Los tres marcadores que caen. Cada uno tiene una animación distinta */
+.tim-marker { opacity: 0; }
+.tim-marker text {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+.tim-marker .badge { text-anchor: start; font-weight: 500; font-size: 11px; }
+
+/* Un ciclo maestro de 12s: 3 escenarios, 4s cada uno */
+.tim-marker-early { animation: tim-early 12s ease-in-out infinite; }
+.tim-marker-good  { animation: tim-good  12s ease-in-out infinite; }
+.tim-marker-late  { animation: tim-late  12s ease-in-out infinite; }
+.tim-marker-early text { fill: var(--bad); }
+.tim-marker-good  text { fill: var(--good); }
+.tim-marker-late  text { fill: var(--ink-muted); }
+.tim-marker-early .badge { fill: var(--bad); }
+.tim-marker-good  .badge { fill: var(--good); }
+.tim-marker-late  .badge { fill: var(--ink-muted); }
+
+@keyframes tim-early {
+  0%   { opacity: 0; transform: translateY(-20px); }
+  4%   { opacity: 1; transform: translateY(0); }
+  30%  { opacity: 1; }
+  33%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes tim-good {
+  0%, 33%   { opacity: 0; transform: translateY(-20px); }
+  37%       { opacity: 1; transform: translateY(0); }
+  63%       { opacity: 1; }
+  66%       { opacity: 0; }
+  100%      { opacity: 0; }
+}
+@keyframes tim-late {
+  0%, 66%   { opacity: 0; transform: translateY(-20px); }
+  70%       { opacity: 1; transform: translateY(0); }
+  96%       { opacity: 1; }
+  100%      { opacity: 0; }
+}
+
+/* Barra de "escenario actual" (etiqueta debajo) */
+.tim-scenario-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-anchor: middle;
+  opacity: 0;
+}
+.tim-scenario-1 { fill: var(--bad);  animation: tim-early 12s ease-in-out infinite; }
+.tim-scenario-2 { fill: var(--good); animation: tim-good  12s ease-in-out infinite; }
+.tim-scenario-3 { fill: var(--ink-muted); animation: tim-late 12s ease-in-out infinite; }
+
+/* ─────────────────────────────────────────────────────────────
+   Accesibilidad: si el usuario prefiere sin movimiento,
+   paramos animaciones y dejamos visible el escenario "correcto".
+   ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cycle-step-circle, .cycle-step-number { animation: none; }
+  .cycle-step-3 .cycle-step-circle { fill: var(--accent); stroke: var(--accent); }
+  .cycle-step-3 .cycle-step-number { fill: #fff; }
+
+  .tim-marker-early, .tim-marker-late, .tim-scenario-1, .tim-scenario-3 {
+    animation: none;
+    opacity: 0;
+  }
+  .tim-marker-good, .tim-scenario-2 {
+    animation: none;
+    opacity: 1;
+  }
+}
