@@ -64,6 +64,14 @@ export default async function CoursePage({ params }: { params: Params }) {
         ))}
       </div>
 
+      <Link
+        href={`/cursos/${course.slug}/chat`}
+        className="mt-8 inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 px-5 py-2.5 text-sm font-medium hover:border-indigo-400"
+      >
+        <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+        Hablar con el docente digital →
+      </Link>
+
       <h2 className="text-2xl font-semibold mt-12 mb-4">Lecciones</h2>
       <ol className="divide-y divide-zinc-200 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
         {course.lessons.map((lesson) => (
