@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { recentJournalAsMarkdown } from "@/lib/journal";
+import { listEntries } from "@/lib/journal";
 
 type Props = {
   courseSlug: string;
@@ -12,41 +12,24 @@ type Props = {
 };
 
 export function DocenteChat({ courseSlug, courseTitle }: Props) {
-  // Fresh reference to the journal on every send, so a note added while a
-  // chat session is open reaches the very next message.
-  const journalRef = useRef<string | undefined>(undefined);
-  const [journalCount, setJournalCount] = useState(0);
+  const [journalCount, setJournalCount] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    const refresh = () => {
-      journalRef.current = recentJournalAsMarkdown(courseSlug);
-      try {
-        const raw = window.localStorage.getItem(
-          `cursos-saas:journal:${courseSlug}`,
-        );
-        const parsed = raw ? JSON.parse(raw) : [];
-        setJournalCount(Array.isArray(parsed) ? parsed.length : 0);
-      } catch {
-        setJournalCount(0);
-      }
+    let mounted = true;
+    listEntries(courseSlug)
+      .then((entries) => {
+        if (mounted) setJournalCount(entries.length);
+      })
+      .catch(() => {
+        if (mounted) setJournalCount(0);
+      });
+    return () => {
+      mounted = false;
     };
-    refresh();
-    window.addEventListener("storage", refresh);
-    return () => window.removeEventListener("storage", refresh);
   }, [courseSlug]);
 
   const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: `/api/chat/${courseSlug}`,
-        prepareSendMessagesRequest: ({ messages, body }) => ({
-          body: {
-            ...(body ?? {}),
-            messages,
-            journalMarkdown: journalRef.current,
-          },
-        }),
-      }),
+    () => new DefaultChatTransport({ api: `/api/chat/${courseSlug}` }),
     [courseSlug],
   );
 
@@ -86,7 +69,7 @@ export function DocenteChat({ courseSlug, courseTitle }: Props) {
             {courseTitle} · sólo responde temas del curso
           </p>
         </div>
-        {journalCount > 0 && (
+        {typeof journalCount === "number" && journalCount > 0 && (
           <Link
             href={`/cursos/${courseSlug}/seguimiento`}
             className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"

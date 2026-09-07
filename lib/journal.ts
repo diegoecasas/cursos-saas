@@ -1,14 +1,12 @@
-// Client-side journal storage. Notes live in localStorage — never on our server.
-// They're sent to the chat API only when the student is actively chatting, so the
-// server sees them only in-request, never at rest.
+// Client-side journal API. Notes live in Postgres on the server, keyed by an
+// anonymous per-browser cookie. localStorage is used only as a temporary offline
+// buffer for a note being edited between saves.
 
 export type JournalEntry = {
-  date: string; // YYYY-MM-DD in the student's local timezone
+  date: string;
   content: string;
-  updatedAt: number;
+  updatedAt: string;
 };
-
-const storageKey = (courseSlug: string) => `cursos-saas:journal:${courseSlug}`;
 
 export function todayIso(): string {
   const d = new Date();
@@ -17,77 +15,6 @@ export function todayIso(): string {
     String(d.getMonth() + 1).padStart(2, "0"),
     String(d.getDate()).padStart(2, "0"),
   ].join("-");
-}
-
-export function readAll(courseSlug: string): JournalEntry[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(storageKey(courseSlug));
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter(
-        (e): e is JournalEntry =>
-          e &&
-          typeof e === "object" &&
-          typeof e.date === "string" &&
-          typeof e.content === "string",
-      )
-      .sort((a, b) => (a.date < b.date ? 1 : -1));
-  } catch {
-    return [];
-  }
-}
-
-export function readEntry(
-  courseSlug: string,
-  date: string,
-): JournalEntry | undefined {
-  return readAll(courseSlug).find((e) => e.date === date);
-}
-
-export function saveEntry(courseSlug: string, date: string, content: string) {
-  if (typeof window === "undefined") return;
-  const list = readAll(courseSlug);
-  const idx = list.findIndex((e) => e.date === date);
-  const trimmed = content.slice(0, 4000);
-  if (!trimmed.trim() && idx >= 0) {
-    // Empty content — remove the entry entirely.
-    list.splice(idx, 1);
-  } else if (trimmed.trim()) {
-    const entry: JournalEntry = {
-      date,
-      content: trimmed,
-      updatedAt: Date.now(),
-    };
-    if (idx >= 0) list[idx] = entry;
-    else list.push(entry);
-  } else {
-    return;
-  }
-  list.sort((a, b) => (a.date < b.date ? 1 : -1));
-  window.localStorage.setItem(storageKey(courseSlug), JSON.stringify(list));
-}
-
-// Compact recent journal into a plain-text block for the model context.
-// Only the last N days with content, trimmed to keep the prompt small.
-export function recentJournalAsMarkdown(
-  courseSlug: string,
-  days = 7,
-): string | undefined {
-  const all = readAll(courseSlug);
-  if (all.length === 0) return undefined;
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
-  const cutoffIso = cutoff.toISOString().slice(0, 10);
-  const recent = all.filter((e) => e.date >= cutoffIso && e.content.trim());
-  if (recent.length === 0) return undefined;
-  const parts = recent.map((e) => {
-    const capped = e.content.length > 600 ? e.content.slice(0, 600) + "…" : e.content;
-    return `### ${e.date}\n${capped}`;
-  });
-  return parts.join("\n\n");
 }
 
 export function formatDateEs(iso: string): string {
@@ -100,5 +27,91 @@ export function formatDateEs(iso: string): string {
     });
   } catch {
     return iso;
+  }
+}
+
+export async function listEntries(courseSlug: string): Promise<JournalEntry[]> {
+  const res = await fetch(`/api/journal/${courseSlug}`, {
+    credentials: "same-origin",
+  });
+  if (!res.ok) throw new Error(`No pudimos cargar tus notas (${res.status}).`);
+  const data = await res.json();
+  return (data.entries ?? []) as JournalEntry[];
+}
+
+export async function saveEntry(
+  courseSlug: string,
+  date: string,
+  content: string,
+): Promise<void> {
+  const res = await fetch(`/api/journal/${courseSlug}`, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ date, content }),
+  });
+  if (!res.ok) throw new Error(`No pudimos guardar (${res.status}).`);
+}
+
+// One-shot migration: read old localStorage notes and push them to the API.
+// Returns how many entries were migrated. Deletes the local key on success.
+const legacyKey = (slug: string) => `cursos-saas:journal:${slug}`;
+
+export async function migrateFromLocalStorage(
+  courseSlug: string,
+): Promise<number> {
+  if (typeof window === "undefined") return 0;
+  let raw: string | null;
+  try {
+    raw = window.localStorage.getItem(legacyKey(courseSlug));
+  } catch {
+    return 0;
+  }
+  if (!raw) return 0;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return 0;
+  }
+  if (!Array.isArray(parsed)) return 0;
+  let migrated = 0;
+  for (const entry of parsed) {
+    if (
+      entry &&
+      typeof entry === "object" &&
+      "date" in entry &&
+      "content" in entry &&
+      typeof (entry as { date: unknown }).date === "string" &&
+      typeof (entry as { content: unknown }).content === "string"
+    ) {
+      const e = entry as { date: string; content: string };
+      if (!e.content.trim()) continue;
+      try {
+        await saveEntry(courseSlug, e.date, e.content);
+        migrated++;
+      } catch {
+        // best effort; leave the local copy in place if the API failed
+        return migrated;
+      }
+    }
+  }
+  try {
+    window.localStorage.removeItem(legacyKey(courseSlug));
+  } catch {
+    // ignore
+  }
+  return migrated;
+}
+
+export function hasLocalStorageEntries(courseSlug: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = window.localStorage.getItem(legacyKey(courseSlug));
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0;
+  } catch {
+    return false;
   }
 }

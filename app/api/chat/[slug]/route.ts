@@ -4,13 +4,14 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { getCourse } from "@/content/courses";
 import { getCourseContext } from "@/lib/courseContext";
 import { buildSystemPrompt, looksLikeInjection } from "@/lib/systemPrompt";
+import { getOrCreateCookieId } from "@/lib/identity";
+import { recentJournalMarkdown } from "@/lib/journalServer";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const MAX_INPUT_LEN = 2000;
 const MAX_MESSAGES = 20;
-const MAX_JOURNAL_LEN = 6000;
 
 type Params = Promise<{ slug: string }>;
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     return Response.json({ error: "Curso no encontrado." }, { status: 404 });
   }
 
-  let body: { messages?: UIMessage[]; journalMarkdown?: string };
+  let body: { messages?: UIMessage[] };
   try {
     body = await req.json();
   } catch {
@@ -29,11 +30,6 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
   }
 
   const messages = body.messages;
-  const journalMarkdown =
-    typeof body.journalMarkdown === "string"
-      ? body.journalMarkdown.slice(0, MAX_JOURNAL_LEN)
-      : undefined;
-
   if (!Array.isArray(messages) || messages.length === 0) {
     return Response.json({ error: "Faltan mensajes." }, { status: 400 });
   }
@@ -70,13 +66,15 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     );
   }
 
-  // The journal comes from the user's own browser. We drop it if it also carries
-  // tag-injection patterns — safer than letting a page script (or a compromised
-  // extension) sneak instructions into the system prompt via the journal channel.
+  // Load the student's recent journal notes from Postgres, using the anonymous
+  // per-browser cookie as identity. Never trust the client for this — the
+  // journal lives on the server.
+  const cookieId = await getOrCreateCookieId();
+  const journalMd = await recentJournalMarkdown(cookieId, course.slug).catch(
+    () => undefined,
+  );
   const safeJournal =
-    journalMarkdown && !looksLikeInjection(journalMarkdown)
-      ? journalMarkdown
-      : undefined;
+    journalMd && !looksLikeInjection(journalMd) ? journalMd : undefined;
 
   const courseContext = await getCourseContext(course);
   const system = buildSystemPrompt(course, courseContext, safeJournal);
