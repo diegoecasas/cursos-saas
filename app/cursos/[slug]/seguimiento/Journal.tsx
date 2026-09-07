@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   listEntries,
   saveEntry,
@@ -15,6 +15,7 @@ import {
 type Props = { courseSlug: string; chatHref: string };
 
 export function Journal({ courseSlug, chatHref }: Props) {
+  const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -25,6 +26,7 @@ export function Journal({ courseSlug, chatHref }: Props) {
   );
   const [past, setPast] = useState<JournalEntry[]>([]);
   const [showMigrate, setShowMigrate] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const saveTimer = useRef<number | undefined>(undefined);
   const lastSaved = useRef<string>("");
 
@@ -39,7 +41,6 @@ export function Journal({ courseSlug, chatHref }: Props) {
         setContent(todayEntry?.content ?? "");
         lastSaved.current = todayEntry?.content ?? "";
       } else if (todayEntry && todayEntry.content !== preserved) {
-        // A concurrent edit from another tab — surface it.
         setContent(todayEntry.content);
         lastSaved.current = todayEntry.content;
       }
@@ -58,7 +59,6 @@ export function Journal({ courseSlug, chatHref }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseSlug]);
 
-  // Debounced autosave.
   useEffect(() => {
     if (!hydrated || loading) return;
     if (content === lastSaved.current) return;
@@ -69,7 +69,6 @@ export function Journal({ courseSlug, chatHref }: Props) {
         await saveEntry(courseSlug, today, content);
         lastSaved.current = content;
         setStatus("saved");
-        // Refresh past list only if content was newly empty or newly present.
       } catch (e) {
         setStatus("error");
         setError((e as Error).message);
@@ -79,6 +78,26 @@ export function Journal({ courseSlug, chatHref }: Props) {
       if (saveTimer.current) window.clearTimeout(saveTimer.current);
     };
   }, [content, hydrated, loading, courseSlug, today]);
+
+  async function handleSaveAndChat() {
+    const trimmed = content.trim();
+    if (!trimmed || navigating) return;
+    setNavigating(true);
+    setStatus("saving");
+    if (saveTimer.current) window.clearTimeout(saveTimer.current);
+    try {
+      if (content !== lastSaved.current) {
+        await saveEntry(courseSlug, today, content);
+        lastSaved.current = content;
+      }
+      setStatus("saved");
+      router.push(`${chatHref}?fromNote=${today}`);
+    } catch (e) {
+      setStatus("error");
+      setError((e as Error).message);
+      setNavigating(false);
+    }
+  }
 
   async function runMigration() {
     setStatus("saving");
@@ -138,6 +157,8 @@ export function Journal({ courseSlug, chatHref }: Props) {
     }
   }
 
+  const canSaveAndChat = content.trim().length > 0 && !loading && !navigating;
+
   return (
     <div className="space-y-8">
       {showMigrate && (
@@ -145,7 +166,7 @@ export function Journal({ courseSlug, chatHref }: Props) {
           <p className="text-sm text-amber-900 dark:text-amber-200">
             Encontramos notas viejas guardadas sólo en este navegador. Podés
             migrarlas al servidor para que sobrevivan si limpiás cookies o
-            cambiás de dispositivo (más adelante, cuando agreguemos login).
+            cambiás de dispositivo.
           </p>
           <button
             type="button"
@@ -171,8 +192,7 @@ export function Journal({ courseSlug, chatHref }: Props) {
         </div>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Contá cómo te fue con tu cachorro hoy. Qué funcionó, qué te frustró, qué te
-          sorprendió. Cuando charles con el docente digital, va a poder usar estas
-          notas para darte apoyo.
+          sorprendió. Se autoguarda mientras escribís.
         </p>
         <textarea
           value={content}
@@ -183,15 +203,29 @@ export function Journal({ courseSlug, chatHref }: Props) {
           placeholder="Ej. Hoy tuvimos dos accidentes seguidos en la sala. Me da rabia porque hicimos las salidas del reloj. Creo que se me escapó el disparador de la siesta corta a las 4pm…"
           className="mt-4 w-full resize-y rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3 text-sm leading-relaxed focus:outline-none focus:border-indigo-400 disabled:opacity-60"
         />
-        <div className="mt-3 flex items-center justify-between text-xs text-zinc-500">
-          <span>{content.length} / 4000</span>
-          <Link
-            href={chatHref}
-            className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+        <div className="mt-4 flex items-center justify-between gap-4 flex-wrap">
+          <span className="text-xs text-zinc-500">{content.length} / 4000</span>
+          <button
+            type="button"
+            onClick={handleSaveAndChat}
+            disabled={!canSaveAndChat}
+            className="inline-flex items-center gap-2 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-800 disabled:text-zinc-500 text-white px-5 py-2.5 text-sm font-medium transition"
           >
-            Hablar con el docente digital →
-          </Link>
+            {navigating ? (
+              <>
+                <span className="inline-block w-3 h-3 rounded-full bg-white/60 animate-pulse" />
+                Abriendo el chat…
+              </>
+            ) : (
+              <>Guardar y hablar con el docente →</>
+            )}
+          </button>
         </div>
+        {!canSaveAndChat && !navigating && !loading && (
+          <p className="mt-2 text-xs text-zinc-500 text-right">
+            Escribí algo para activar el botón.
+          </p>
+        )}
       </section>
 
       <section>
@@ -249,10 +283,9 @@ export function Journal({ courseSlug, chatHref }: Props) {
 
       <p className="text-xs text-zinc-500 border-t border-zinc-200 dark:border-zinc-800 pt-4">
         <strong>Privacidad:</strong> tus notas se guardan en nuestro servidor
-        (Neon Postgres), identificadas con un ID anónimo que vive como cookie en
-        este navegador. Sin login, así que si limpiás cookies o cambiás de
-        dispositivo, se pierde el hilo. Cuando charlás con el docente digital,
-        las últimas 7 entradas se pasan a Anthropic dentro del mensaje y no se
+        (Neon Postgres), asociadas a tu cuenta si estás logueado o a un ID
+        anónimo del navegador si no. Cuando charlás con el docente digital, las
+        últimas 7 entradas se pasan a Anthropic dentro del mensaje y no se
         persisten allá.
       </p>
     </div>

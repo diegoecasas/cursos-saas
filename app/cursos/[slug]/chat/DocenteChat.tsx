@@ -9,9 +9,10 @@ import { listEntries } from "@/lib/journal";
 type Props = {
   courseSlug: string;
   courseTitle: string;
+  fromNote?: string;
 };
 
-export function DocenteChat({ courseSlug, courseTitle }: Props) {
+export function DocenteChat({ courseSlug, courseTitle, fromNote }: Props) {
   const [journalCount, setJournalCount] = useState<number | undefined>(undefined);
 
   useEffect(() => {
@@ -36,10 +37,24 @@ export function DocenteChat({ courseSlug, courseTitle }: Props) {
   const { messages, sendMessage, status, error, stop } = useChat({ transport });
   const [input, setInput] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
+  const openerFiredRef = useRef(false);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
   }, [messages, status]);
+
+  // If the user arrived from Seguimiento with ?fromNote=YYYY-MM-DD, fire an
+  // opening message once so the docente reacts to what they just wrote.
+  useEffect(() => {
+    if (!fromNote) return;
+    if (openerFiredRef.current) return;
+    if (messages.length !== 0) return;
+    openerFiredRef.current = true;
+    sendMessage({
+      text:
+        "Acabo de guardar mi seguimiento de hoy. Léelo y decime qué observás — cómo estoy yendo, qué ajustaría del método, y qué necesito escuchar hoy.",
+    });
+  }, [fromNote, messages.length, sendMessage]);
 
   const busy = status === "submitted" || status === "streaming";
 
@@ -56,6 +71,8 @@ export function DocenteChat({ courseSlug, courseTitle }: Props) {
     "¿Qué hago si tiene un accidente adentro?",
     "¿Por qué el timing del \"¡sí!\" importa tanto?",
   ];
+
+  const showSuggestions = messages.length === 0 && !fromNote;
 
   return (
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col h-[70vh] bg-white dark:bg-zinc-950">
@@ -81,7 +98,7 @@ export function DocenteChat({ courseSlug, courseTitle }: Props) {
       </header>
 
       <div ref={listRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        {messages.length === 0 && (
+        {showSuggestions && (
           <div className="text-sm text-zinc-500">
             <p>Preguntame lo que quieras sobre el curso. Algunas ideas:</p>
             <div className="mt-3 flex flex-col gap-2">

@@ -7,6 +7,7 @@ import { DocenteChat } from "./DocenteChat";
 export const dynamic = "force-dynamic";
 
 type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ fromNote?: string }>;
 
 export async function generateStaticParams() {
   return courses.map((c) => ({ slug: c.slug }));
@@ -26,8 +27,15 @@ export async function generateMetadata({
   };
 }
 
-export default async function ChatPage({ params }: { params: Params }) {
+export default async function ChatPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { slug } = await params;
+  const { fromNote } = await searchParams;
   const course = getCourse(slug);
   if (!course) notFound();
 
@@ -59,7 +67,11 @@ export default async function ChatPage({ params }: { params: Params }) {
         No responde temas fuera del temario, y no reemplaza al veterinario para nada clínico.
       </p>
 
-      <DocenteChat courseSlug={course.slug} courseTitle={course.title} />
+      <DocenteChat
+        courseSlug={course.slug}
+        courseTitle={course.title}
+        fromNote={fromNote}
+      />
 
       <p className="mt-4 text-xs text-zinc-500">
         Modelo: <code>claude-haiku-4-5</code> · Contexto: sólo las lecciones y
