@@ -13,7 +13,7 @@ export function Footer() {
             Código
           </a>
           <span>·</span>
-          <span>Hosted en Vercel + Fly.io</span>
+          <span>Hosted en Vercel</span>
         </p>
       </div>
     </footer>
