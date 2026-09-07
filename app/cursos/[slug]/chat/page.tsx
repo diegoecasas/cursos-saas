@@ -33,7 +33,14 @@ export default async function ChatPage({ params }: { params: Params }) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      <nav className="text-sm text-zinc-500 mb-4">
+      <Link
+        href={`/cursos/${course.slug}`}
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-4"
+      >
+        ← Volver al curso
+      </Link>
+
+      <nav className="text-xs text-zinc-500 mb-4">
         <Link href="/cursos" className="hover:underline">
           Catálogo
         </Link>{" "}
