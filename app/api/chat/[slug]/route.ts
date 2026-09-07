@@ -10,6 +10,7 @@ export const maxDuration = 60;
 
 const MAX_INPUT_LEN = 2000;
 const MAX_MESSAGES = 20;
+const MAX_JOURNAL_LEN = 6000;
 
 type Params = Promise<{ slug: string }>;
 
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     return Response.json({ error: "Curso no encontrado." }, { status: 404 });
   }
 
-  let body: { messages?: UIMessage[] };
+  let body: { messages?: UIMessage[]; journalMarkdown?: string };
   try {
     body = await req.json();
   } catch {
@@ -28,6 +29,11 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
   }
 
   const messages = body.messages;
+  const journalMarkdown =
+    typeof body.journalMarkdown === "string"
+      ? body.journalMarkdown.slice(0, MAX_JOURNAL_LEN)
+      : undefined;
+
   if (!Array.isArray(messages) || messages.length === 0) {
     return Response.json({ error: "Faltan mensajes." }, { status: 400 });
   }
@@ -40,7 +46,6 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     );
   }
 
-  // Extract flat text of each message for validation.
   const textOf = (m: UIMessage): string =>
     (m.parts ?? [])
       .filter((p): p is { type: "text"; text: string } => p.type === "text")
@@ -65,8 +70,16 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     );
   }
 
+  // The journal comes from the user's own browser. We drop it if it also carries
+  // tag-injection patterns — safer than letting a page script (or a compromised
+  // extension) sneak instructions into the system prompt via the journal channel.
+  const safeJournal =
+    journalMarkdown && !looksLikeInjection(journalMarkdown)
+      ? journalMarkdown
+      : undefined;
+
   const courseContext = await getCourseContext(course);
-  const system = buildSystemPrompt(course, courseContext);
+  const system = buildSystemPrompt(course, courseContext, safeJournal);
 
   const result = streamText({
     model: anthropic("claude-haiku-4-5-20251001"),

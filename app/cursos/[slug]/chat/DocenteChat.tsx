@@ -2,7 +2,9 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import Link from "next/link";
+import { recentJournalAsMarkdown } from "@/lib/journal";
 
 type Props = {
   courseSlug: string;
@@ -10,9 +12,45 @@ type Props = {
 };
 
 export function DocenteChat({ courseSlug, courseTitle }: Props) {
-  const { messages, sendMessage, status, error, stop } = useChat({
-    transport: new DefaultChatTransport({ api: `/api/chat/${courseSlug}` }),
-  });
+  // Fresh reference to the journal on every send, so a note added while a
+  // chat session is open reaches the very next message.
+  const journalRef = useRef<string | undefined>(undefined);
+  const [journalCount, setJournalCount] = useState(0);
+
+  useEffect(() => {
+    const refresh = () => {
+      journalRef.current = recentJournalAsMarkdown(courseSlug);
+      try {
+        const raw = window.localStorage.getItem(
+          `cursos-saas:journal:${courseSlug}`,
+        );
+        const parsed = raw ? JSON.parse(raw) : [];
+        setJournalCount(Array.isArray(parsed) ? parsed.length : 0);
+      } catch {
+        setJournalCount(0);
+      }
+    };
+    refresh();
+    window.addEventListener("storage", refresh);
+    return () => window.removeEventListener("storage", refresh);
+  }, [courseSlug]);
+
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: `/api/chat/${courseSlug}`,
+        prepareSendMessagesRequest: ({ messages, body }) => ({
+          body: {
+            ...(body ?? {}),
+            messages,
+            journalMarkdown: journalRef.current,
+          },
+        }),
+      }),
+    [courseSlug],
+  );
+
+  const { messages, sendMessage, status, error, stop } = useChat({ transport });
   const [input, setInput] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -42,12 +80,21 @@ export function DocenteChat({ courseSlug, courseTitle }: Props) {
         <span className="inline-block w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-600 flex items-center justify-center text-white text-sm font-semibold">
           D
         </span>
-        <div className="leading-tight">
+        <div className="leading-tight flex-1">
           <p className="font-medium">Docente digital</p>
           <p className="text-xs text-zinc-500">
             {courseTitle} · sólo responde temas del curso
           </p>
         </div>
+        {journalCount > 0 && (
+          <Link
+            href={`/cursos/${courseSlug}/seguimiento`}
+            className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+            title="El docente está leyendo estas notas de tu seguimiento"
+          >
+            {journalCount} nota{journalCount === 1 ? "" : "s"} en contexto
+          </Link>
+        )}
       </header>
 
       <div ref={listRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
@@ -66,6 +113,18 @@ export function DocenteChat({ courseSlug, courseTitle }: Props) {
                 </button>
               ))}
             </div>
+            {journalCount === 0 && (
+              <p className="mt-4 text-xs text-zinc-500">
+                Tip: si escribís cómo te está yendo en{" "}
+                <Link
+                  href={`/cursos/${courseSlug}/seguimiento`}
+                  className="underline hover:text-zinc-900 dark:hover:text-white"
+                >
+                  seguimiento
+                </Link>
+                , el docente puede darte apoyo más personalizado.
+              </p>
+            )}
           </div>
         )}
 
