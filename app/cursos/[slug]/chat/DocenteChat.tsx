@@ -52,7 +52,7 @@ export function DocenteChat({ courseSlug, courseTitle, fromNote }: Props) {
     openerFiredRef.current = true;
     sendMessage({
       text:
-        "Acabo de guardar mi seguimiento de hoy. Léelo y decime qué observás — cómo estoy yendo, qué ajustaría del método, y qué necesito escuchar hoy.",
+        "Acabo de guardar mi seguimiento de hoy. Léelo y dime qué observas — cómo estoy yendo, qué ajustaría del método, y qué necesito escuchar hoy.",
     });
   }, [fromNote, messages.length, sendMessage]);
 
@@ -115,7 +115,7 @@ export function DocenteChat({ courseSlug, courseTitle, fromNote }: Props) {
             </div>
             {journalCount === 0 && (
               <p className="mt-4 text-xs text-zinc-500">
-                Tip: si escribís cómo te está yendo en{" "}
+                Tip: si escribes cómo te está yendo en{" "}
                 <Link
                   href={`/cursos/${courseSlug}/seguimiento`}
                   className="underline hover:text-zinc-900 dark:hover:text-white"

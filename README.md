@@ -43,7 +43,7 @@ mismas garantías de aislamiento.
 
 ```bash
 npm install
-cp .env.example .env.local          # y pegá tu ANTHROPIC_API_KEY
+cp .env.example .env.local          # y pega tu ANTHROPIC_API_KEY
 npm run dev                         # http://localhost:3000
 ```
 

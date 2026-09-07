@@ -192,7 +192,7 @@ export function Journal({ courseSlug, chatHref }: Props) {
         </div>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Contá cómo te fue con tu cachorro hoy. Qué funcionó, qué te frustró, qué te
-          sorprendió. Se autoguarda mientras escribís.
+          sorprendió. Se autoguarda mientras escribes.
         </p>
         <textarea
           value={content}
@@ -284,7 +284,7 @@ export function Journal({ courseSlug, chatHref }: Props) {
       <p className="text-xs text-zinc-500 border-t border-zinc-200 dark:border-zinc-800 pt-4">
         <strong>Privacidad:</strong> tus notas se guardan en nuestro servidor
         (Neon Postgres), asociadas a tu cuenta si estás logueado o a un ID
-        anónimo del navegador si no. Cuando charlás con el docente digital, las
+        anónimo del navegador si no. Cuando hablas con el docente digital, las
         últimas 7 entradas se pasan a Anthropic dentro del mensaje y no se
         persisten allá.
       </p>
