@@ -7,15 +7,15 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 
-// One note per (cookieId, courseSlug, date). Empty content = row is deleted.
+// Owner is either "user:<clerkId>" (signed in) or "anon:<cookie-uuid>"
+// (anonymous per browser). One note per (owner, course, date). Empty content
+// means the row was deleted client-side.
 export const notes = pgTable(
   "notes",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    cookieId: text("cookie_id").notNull(),
+    ownerId: text("owner_id").notNull(),
     courseSlug: text("course_slug").notNull(),
-    // YYYY-MM-DD in the student's local timezone (kept as text, not date,
-    // to avoid TZ round-trips — the client owns the calendar).
     date: text("date").notNull(),
     content: text("content").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -27,11 +27,11 @@ export const notes = pgTable(
   },
   (t) => [
     uniqueIndex("notes_owner_course_date_uq").on(
-      t.cookieId,
+      t.ownerId,
       t.courseSlug,
       t.date,
     ),
-    index("notes_owner_course_idx").on(t.cookieId, t.courseSlug),
+    index("notes_owner_course_idx").on(t.ownerId, t.courseSlug),
   ],
 );
 

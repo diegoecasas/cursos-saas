@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { and, desc, eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
-import { getOrCreateCookieId } from "@/lib/identity";
+import { getOwnerId } from "@/lib/identity";
 import { getCourse } from "@/content/courses";
 
 export const runtime = "nodejs";
@@ -16,7 +16,7 @@ export async function GET(_req: NextRequest, { params }: { params: Params }) {
   if (!getCourse(slug)) {
     return Response.json({ error: "Curso no encontrado." }, { status: 404 });
   }
-  const cookieId = await getOrCreateCookieId();
+  const ownerId = await getOwnerId();
   const db = getDb();
   const rows = await db
     .select({
@@ -27,7 +27,7 @@ export async function GET(_req: NextRequest, { params }: { params: Params }) {
     .from(schema.notes)
     .where(
       and(
-        eq(schema.notes.cookieId, cookieId),
+        eq(schema.notes.ownerId, ownerId),
         eq(schema.notes.courseSlug, slug),
       ),
     )
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest, { params }: { params: Params }) {
   }
   const content = body.content.slice(0, MAX_CONTENT_LEN);
 
-  const cookieId = await getOrCreateCookieId();
+  const ownerId = await getOwnerId();
   const db = getDb();
 
   if (!content.trim()) {
@@ -67,7 +67,7 @@ export async function PUT(req: NextRequest, { params }: { params: Params }) {
       .delete(schema.notes)
       .where(
         and(
-          eq(schema.notes.cookieId, cookieId),
+          eq(schema.notes.ownerId, ownerId),
           eq(schema.notes.courseSlug, slug),
           eq(schema.notes.date, body.date),
         ),
@@ -79,7 +79,7 @@ export async function PUT(req: NextRequest, { params }: { params: Params }) {
   await db
     .insert(schema.notes)
     .values({
-      cookieId,
+      ownerId,
       courseSlug: slug,
       date: body.date,
       content,
@@ -87,7 +87,7 @@ export async function PUT(req: NextRequest, { params }: { params: Params }) {
     })
     .onConflictDoUpdate({
       target: [
-        schema.notes.cookieId,
+        schema.notes.ownerId,
         schema.notes.courseSlug,
         schema.notes.date,
       ],

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { esES } from "@clerk/localizations";
 import "./globals.css";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
@@ -25,15 +27,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    <ClerkProvider
+      localization={esES}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/cursos"
+      signUpFallbackRedirectUrl="/cursos"
     >
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </body>
-    </html>
+      <html
+        lang="es"
+        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      >
+        <body className="min-h-full flex flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

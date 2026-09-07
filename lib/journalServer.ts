@@ -1,16 +1,8 @@
 import { and, desc, eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 
-export type JournalRow = {
-  date: string;
-  content: string;
-  updatedAt: Date;
-};
-
-// Loads recent journal entries for a (cookieId, courseSlug) pair and formats
-// them as markdown for injection into the chat system prompt.
 export async function recentJournalMarkdown(
-  cookieId: string,
+  ownerId: string,
   courseSlug: string,
   days = 7,
   maxCharsPerEntry = 600,
@@ -28,7 +20,7 @@ export async function recentJournalMarkdown(
     .from(schema.notes)
     .where(
       and(
-        eq(schema.notes.cookieId, cookieId),
+        eq(schema.notes.ownerId, ownerId),
         eq(schema.notes.courseSlug, courseSlug),
       ),
     )

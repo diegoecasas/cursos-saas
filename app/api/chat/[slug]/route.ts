@@ -4,7 +4,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { getCourse } from "@/content/courses";
 import { getCourseContext } from "@/lib/courseContext";
 import { buildSystemPrompt, looksLikeInjection } from "@/lib/systemPrompt";
-import { getOrCreateCookieId } from "@/lib/identity";
+import { getOwnerId } from "@/lib/identity";
 import { recentJournalMarkdown } from "@/lib/journalServer";
 
 export const runtime = "nodejs";
@@ -69,8 +69,8 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
   // Load the student's recent journal notes from Postgres, using the anonymous
   // per-browser cookie as identity. Never trust the client for this — the
   // journal lives on the server.
-  const cookieId = await getOrCreateCookieId();
-  const journalMd = await recentJournalMarkdown(cookieId, course.slug).catch(
+  const ownerId = await getOwnerId();
+  const journalMd = await recentJournalMarkdown(ownerId, course.slug).catch(
     () => undefined,
   );
   const safeJournal =
