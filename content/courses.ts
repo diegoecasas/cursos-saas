@@ -5,6 +5,10 @@ export type Lesson = {
   summary: string;
   duration: string;
   file: string;
+  /** Ruta relativa dentro de public/course-content/<slug>/, si ya existe una
+   * versión animada de esta lección (motor Remotion en teach-animado). El
+   * HTML en `file` sigue siendo la fuente para el docente digital. */
+  video?: string;
 };
 
 export type Reference = {
@@ -52,6 +56,7 @@ export const courses: Course[] = [
           "El protocolo de las primeras dos semanas. Cada salida ejecutada igual, con timing preciso del marcador.",
         duration: "15 min",
         file: "0001-el-ciclo-de-necesidades.html",
+        video: "videos/0001-el-ciclo-de-necesidades.mp4",
       },
     ],
     references: [

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getCourse, getLesson, courses } from "@/content/courses";
+import LessonMedia from "./LessonMedia";
 
 type Params = Promise<{ slug: string; num: string }>;
 
@@ -36,6 +37,9 @@ export default async function LessonPage({ params }: { params: Params }) {
   const prev = course.lessons.find((l) => l.num === numInt - 1);
   const next = course.lessons.find((l) => l.num === numInt + 1);
   const iframeSrc = `/course-content/${course.slug}/lessons/${lesson.file}`;
+  const videoSrc = lesson.video
+    ? `/course-content/${course.slug}/${lesson.video}`
+    : null;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
@@ -57,14 +61,22 @@ export default async function LessonPage({ params }: { params: Params }) {
         · <span className="text-zinc-700 dark:text-zinc-300">Lección {lesson.num}</span>
       </nav>
 
-      <div className="rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white">
-        <iframe
-          src={iframeSrc}
+      {videoSrc ? (
+        <LessonMedia
           title={lesson.title}
-          className="w-full min-h-[80vh] bg-white"
-          sandbox="allow-scripts allow-same-origin"
+          videoSrc={videoSrc}
+          iframeSrc={iframeSrc}
         />
-      </div>
+      ) : (
+        <div className="rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white">
+          <iframe
+            src={iframeSrc}
+            title={lesson.title}
+            className="w-full min-h-[80vh] bg-white"
+            sandbox="allow-scripts allow-same-origin"
+          />
+        </div>
+      )}
 
       <div className="mt-6 flex items-center justify-between gap-4">
         <div className="text-sm">
