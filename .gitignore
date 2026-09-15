@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# render-engine (copia embebida de teach-animado, ver lib/generation/) —
+# se sube tal cual al Sandbox; nada de artefactos locales.
+render-engine/node_modules
+render-engine/.venv-tts
+render-engine/out
+render-engine/public/narration
+render-engine/public/generated
+render-engine/scripts/__pycache__
+# Escritos por scripts/run-local-generation.ts para el curso que se esté
+# generando en el momento — no son código, cambian con cada corrida.
+render-engine/src/content/*.json
+render-engine/props.json
+
+# Bytecode de Python del server Modal.
+modal-app/__pycache__

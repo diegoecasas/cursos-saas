@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCourse, courses } from "@/content/courses";
+import { getCourse, getCourses } from "@/content/courses";
 
 type Params = Promise<{ slug: string }>;
 
 export async function generateStaticParams() {
+  const courses = await getCourses();
   return courses.map((c) => ({ slug: c.slug }));
 }
 
@@ -15,14 +16,14 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getCourse(slug);
   if (!course) return {};
   return { title: course.title, description: course.subtitle };
 }
 
 export default async function CoursePage({ params }: { params: Params }) {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getCourse(slug);
   if (!course) notFound();
 
   return (
@@ -64,53 +65,66 @@ export default async function CoursePage({ params }: { params: Params }) {
         ))}
       </div>
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-          href={`/cursos/${course.slug}/chat`}
-          className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 px-5 py-2.5 text-sm font-medium hover:border-indigo-400"
-        >
-          <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-          Hablar con el docente digital →
-        </Link>
-        <Link
-          href={`/cursos/${course.slug}/seguimiento`}
-          className="inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 px-5 py-2.5 text-sm font-medium hover:border-zinc-400"
-        >
-          Mi seguimiento →
-        </Link>
-      </div>
-
-      <h2 className="text-2xl font-semibold mt-12 mb-4">Lecciones</h2>
-      <ol className="divide-y divide-zinc-200 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-        {course.lessons.map((lesson) => (
-          <li key={lesson.num}>
+      {course.status !== "published" ? (
+        <div className="mt-10 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center">
+          <p className="text-lg font-medium">Curso disponible muy pronto</p>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
+            Ya armamos el temario a partir de tu entrevista con el Director. Estamos
+            preparando la narración y el video de cada lección — vas a poder verlo
+            apenas esté listo.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              href={`/cursos/${course.slug}/lecciones/${lesson.num}`}
-              className="flex items-start gap-4 p-5 hover:bg-zinc-50 dark:hover:bg-zinc-900 group"
+              href={`/cursos/${course.slug}/chat`}
+              className="inline-flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 px-5 py-2.5 text-sm font-medium hover:border-indigo-400"
             >
-              <span className="shrink-0 w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center font-medium">
-                {String(lesson.num).padStart(2, "0")}
-              </span>
-              <span className="flex-1">
-                <span className="block font-medium group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                  {lesson.title}
-                </span>
-                <span className="mt-1 block text-sm text-zinc-600 dark:text-zinc-400">
-                  {lesson.summary}
-                </span>
-                <span className="mt-2 block text-xs uppercase tracking-wide text-zinc-500">
-                  {lesson.duration}
-                </span>
-              </span>
-              <span className="text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                →
-              </span>
+              <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+              Hablar con el docente digital →
             </Link>
-          </li>
-        ))}
-      </ol>
+            <Link
+              href={`/cursos/${course.slug}/seguimiento`}
+              className="inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 px-5 py-2.5 text-sm font-medium hover:border-zinc-400"
+            >
+              Mi seguimiento →
+            </Link>
+          </div>
 
-      {course.references.length > 0 && (
+          <h2 className="text-2xl font-semibold mt-12 mb-4">Lecciones</h2>
+          <ol className="divide-y divide-zinc-200 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            {course.lessons.map((lesson) => (
+              <li key={lesson.num}>
+                <Link
+                  href={`/cursos/${course.slug}/lecciones/${lesson.num}`}
+                  className="flex items-start gap-4 p-5 hover:bg-zinc-50 dark:hover:bg-zinc-900 group"
+                >
+                  <span className="shrink-0 w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center font-medium">
+                    {String(lesson.num).padStart(2, "0")}
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-medium group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                      {lesson.title}
+                    </span>
+                    <span className="mt-1 block text-sm text-zinc-600 dark:text-zinc-400">
+                      {lesson.summary}
+                    </span>
+                    <span className="mt-2 block text-xs uppercase tracking-wide text-zinc-500">
+                      {lesson.duration}
+                    </span>
+                  </span>
+                  <span className="text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                    →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+
+      {course.status === "published" && course.references.length > 0 && (
         <>
           <h2 className="text-2xl font-semibold mt-12 mb-4">Referencia</h2>
           <ul className="grid gap-3 sm:grid-cols-2">

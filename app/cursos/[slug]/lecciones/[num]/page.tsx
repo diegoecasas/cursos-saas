@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCourse, getLesson, courses } from "@/content/courses";
+import { getCourse, getLesson, getCourses } from "@/content/courses";
 import LessonMedia from "./LessonMedia";
 
 type Params = Promise<{ slug: string; num: string }>;
 
 export async function generateStaticParams() {
+  const courses = await getCourses();
   return courses.flatMap((c) =>
     c.lessons.map((l) => ({ slug: c.slug, num: String(l.num) })),
   );
@@ -18,8 +19,8 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug, num } = await params;
-  const lesson = getLesson(slug, Number(num));
-  const course = getCourse(slug);
+  const lesson = await getLesson(slug, Number(num));
+  const course = await getCourse(slug);
   if (!lesson || !course) return {};
   return {
     title: lesson.title,
@@ -27,19 +28,46 @@ export async function generateMetadata({
   };
 }
 
+// lesson.video/file son rutas relativas para lecciones autoradas a mano
+// (public/course-content/...) o URLs absolutas de Vercel Blob para lo que
+// genera el Director. Distinguirlas por si empiezan con "http".
+function resolveAsset(courseSlug: string, sub: string, value: string) {
+  return value.startsWith("http")
+    ? value
+    : `/course-content/${courseSlug}/${sub}${value}`;
+}
+
 export default async function LessonPage({ params }: { params: Params }) {
   const { slug, num } = await params;
   const numInt = Number(num);
-  const course = getCourse(slug);
-  const lesson = getLesson(slug, numInt);
+  const course = await getCourse(slug);
+  const lesson = await getLesson(slug, numInt);
   if (!course || !lesson) notFound();
 
   const prev = course.lessons.find((l) => l.num === numInt - 1);
   const next = course.lessons.find((l) => l.num === numInt + 1);
-  const iframeSrc = `/course-content/${course.slug}/lessons/${lesson.file}`;
-  const videoSrc = lesson.video
-    ? `/course-content/${course.slug}/${lesson.video}`
+  const iframeSrc = lesson.file
+    ? resolveAsset(course.slug, "lessons/", lesson.file)
     : null;
+  const videoSrc = lesson.video
+    ? resolveAsset(course.slug, "", lesson.video)
+    : null;
+
+  if (!iframeSrc && !videoSrc) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
+        <Link
+          href={`/cursos/${course.slug}`}
+          className="inline-flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-8"
+        >
+          ← Volver al curso
+        </Link>
+        <p className="text-lg text-zinc-600 dark:text-zinc-400">
+          Esta lección todavía se está generando. Vuelve en unos minutos.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
@@ -70,7 +98,7 @@ export default async function LessonPage({ params }: { params: Params }) {
       ) : (
         <div className="rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white">
           <iframe
-            src={iframeSrc}
+            src={iframeSrc!}
             title={lesson.title}
             className="w-full min-h-[80vh] bg-white"
             sandbox="allow-scripts allow-same-origin"
@@ -105,16 +133,18 @@ export default async function LessonPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      <p className="mt-6 text-sm text-zinc-500 text-center">
-        <a
-          href={iframeSrc}
-          target="_blank"
-          rel="noopener"
-          className="hover:underline"
-        >
-          Abrir la lección en pestaña nueva ↗
-        </a>
-      </p>
+      {iframeSrc && (
+        <p className="mt-6 text-sm text-zinc-500 text-center">
+          <a
+            href={iframeSrc}
+            target="_blank"
+            rel="noopener"
+            className="hover:underline"
+          >
+            Abrir la lección en pestaña nueva ↗
+          </a>
+        </p>
+      )}
     </div>
   );
 }

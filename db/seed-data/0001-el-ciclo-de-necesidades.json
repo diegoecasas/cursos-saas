@@ -1,0 +1,82 @@
+{
+  "id": "0001-el-ciclo-de-necesidades",
+  "courseSlug": "entrenamiento-perro",
+  "title": "El ciclo del cachorro: predecir, sacar, marcar, premiar",
+  "sourceHtml": "lessons/0001-el-ciclo-de-necesidades.html",
+  "primarySource": {
+    "label": "AKC — How to Potty Train a Puppy",
+    "url": "https://www.akc.org/expert-advice/training/how-to-potty-train-a-puppy/"
+  },
+  "beats": [
+    {
+      "kind": "hook",
+      "narration": "Un cachorro no aprende a aguantar. Aprende a dónde va la pipí. Esta semana, tu única meta es que cada vez que Platanito tenga ganas, esté en la calle.",
+      "caption": "El ciclo del cachorro: predecir, sacar, marcar, premiar",
+      "media": { "photo": "hook.jpg", "video": "hook.mp4" }
+    },
+    {
+      "kind": "concept",
+      "narration": "Platanito tiene cuatro meses, así que en teoría aguanta unas cuatro horas. Pero como es de raza pequeña y estamos formando el hábito, vamos a trabajar con salidas cada dos horas de vigilia, más las salidas por disparador.",
+      "title": "Cuánto aguanta Platanito",
+      "body": "4 meses ≈ 4 h en teoría → salidas cada 2 h + disparadores"
+    },
+    {
+      "kind": "trigger-list",
+      "narration": "No cuentes horas, cuenta eventos. Baja a la calle después de despertar, después de comer, después de beber, después de jugar, después de estar un rato en su zona segura, y antes de dormir.",
+      "title": "Los disparadores",
+      "items": [
+        "Al despertar",
+        "Después de comer",
+        "Después de beber",
+        "Después de jugar",
+        "Después de su zona segura",
+        "Antes de dormir"
+      ]
+    },
+    {
+      "kind": "process-steps",
+      "narration": "Este es el ciclo, y lo repites igual en cada salida. Uno: sales directo al sitio elegido, sin juegos ni distracciones. Dos: esperas en silencio hasta cinco minutos, sin hablarle. Tres: en el instante en que empieza, susurras el cue, haz pipí. Cuatro: en cuanto termina, marcador y premio, dices sí con energía. Cinco: ahora sí, a jugar y pasear.",
+      "steps": [
+        { "label": "Sacar al sitio", "detail": "Directo, sin juegos ni distracciones", "photo": "step-1-sacar.jpg" },
+        { "label": "Esperar en silencio", "detail": "Hasta 5 min, sin hablarle", "photo": "step-2-esperar.jpg" },
+        { "label": "Cue al empezar", "detail": "\"haz pipí\" — voz calma", "photo": "step-3-cue.jpg" },
+        { "label": "\"¡Sí!\" + premio", "detail": "En el instante en que termina", "photo": "step-4-si-premio.jpg" },
+        { "label": "Paseo de premio", "detail": "El paseo viene después, no antes", "photo": "step-5-paseo.jpg" }
+      ]
+    },
+    {
+      "kind": "timing-compare",
+      "narration": "El marcador tiene una ventana muy angosta: justo al terminar el pipí. Si dices sí demasiado pronto, Platanito se sobresalta y corta la conducta. Si lo dices justo al terminar, el premio llega conectado y el hábito se consolida. Si lo dices tarde, de vuelta a casa, Platanito ya no sabe qué premiaste.",
+      "cases": [
+        { "label": "Demasiado pronto", "verdict": "bad", "note": "corta la conducta" },
+        { "label": "Justo al terminar", "verdict": "ok", "note": "hábito consolidado" },
+        { "label": "Tarde, de regreso a casa", "verdict": "bad", "note": "desconectado" }
+      ]
+    },
+    {
+      "kind": "do-dont",
+      "narration": "Si hay un accidente adentro, no es un fracaso, es información. Limpia con un producto enzimático, nunca con amoníaco. Anota qué salida se te saltó. Y ajusta el horario de mañana. Nunca regañes ni restriegues el hocico: eso no enseña nada útil, sólo enseña miedo.",
+      "do": [
+        "Limpiar con enzimático",
+        "Anotar qué falló en el manejo",
+        "Ajustar el horario de mañana"
+      ],
+      "dont": [
+        "Regañar o gritar",
+        "Restregar el hocico",
+        "Premiar al volver a casa"
+      ]
+    },
+    {
+      "kind": "cta",
+      "narration": "Tu tarea de hoy: elige el cue y cuéntaselo a todos en casa. Elige el sitio fijo en la calle. Deja los premios listos junto a la puerta. Y revisa el horario diario de referencia.",
+      "tasks": [
+        "Elegir el cue y avisar a todos en casa",
+        "Elegir el sitio fijo en la calle",
+        "Dejar los premios listos junto a la puerta",
+        "Revisar el horario diario de referencia"
+      ],
+      "media": { "photo": "cta.jpg" }
+    }
+  ]
+}

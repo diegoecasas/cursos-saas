@@ -17,7 +17,7 @@ type Params = Promise<{ slug: string }>;
 
 export async function POST(req: NextRequest, { params }: { params: Params }) {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getCourse(slug);
   if (!course) {
     return Response.json({ error: "Curso no encontrado." }, { status: 404 });
   }

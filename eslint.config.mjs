@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Proyecto Remotion aparte, con sus propias dependencias — sólo corre
+    // dentro del Vercel Sandbox del Director, no como parte de esta app.
+    "render-engine/**",
   ]),
 ]);
 

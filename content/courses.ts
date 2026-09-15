@@ -1,14 +1,18 @@
+import { eq, asc } from "drizzle-orm";
+import { getDb, schema } from "@/db";
+
 export type Lesson = {
   num: number;
   slug: string;
   title: string;
   summary: string;
   duration: string;
-  file: string;
-  /** Ruta relativa dentro de public/course-content/<slug>/, si ya existe una
-   * versión animada de esta lección (motor Remotion en teach-animado). El
-   * HTML en `file` sigue siendo la fuente para el docente digital. */
+  /** HTML de referencia, en public/course-content/<slug>/lessons/. Puede
+   * faltar mientras el Sandbox todavía está generando la lección. */
+  file?: string;
+  /** Ruta local o URL de Vercel Blob del video renderizado. */
   video?: string;
+  status: string;
 };
 
 export type Reference = {
@@ -25,66 +29,92 @@ export type Course = {
   author: string;
   level: "principiante" | "intermedio" | "avanzado";
   language: "es" | "en";
-  hero: {
-    from: string;
-    to: string;
-    emoji: string;
-  };
+  hero: schema.Hero;
   tags: string[];
+  status: string;
   lessons: Lesson[];
   references: Reference[];
 };
 
-export const courses: Course[] = [
-  {
-    slug: "entrenamiento-perro",
-    title: "Entrenar a tu cachorro sin usar la fuerza",
-    subtitle: "El método positivo para las primeras semanas en casa",
-    description:
-      "Un curso corto y directo para quienes acaban de recibir un cachorro y viven en departamento. Se enfoca en lo urgente: que aprenda a hacer sus necesidades fuera de casa y responda con obediencia básica. Sin gritos, sin castigos, con evidencia detrás de cada decisión.",
-    author: "Diego Casas",
-    level: "principiante",
-    language: "es",
-    hero: { from: "from-amber-500", to: "to-orange-600", emoji: "🐶" },
-    tags: ["mascotas", "cachorros", "refuerzo positivo", "departamento"],
-    lessons: [
-      {
-        num: 1,
-        slug: "0001-el-ciclo-de-necesidades",
-        title: "El ciclo del cachorro: predecir, sacar, marcar, premiar",
-        summary:
-          "El protocolo de las primeras dos semanas. Cada salida ejecutada igual, con timing preciso del marcador.",
-        duration: "15 min",
-        file: "0001-el-ciclo-de-necesidades.html",
-        video: "videos/0001-el-ciclo-de-necesidades.mp4",
-      },
-    ],
-    references: [
-      {
-        slug: "horario-diario",
-        title: "Horario diario del cachorro",
-        file: "horario-diario.html",
-      },
-    ],
-  },
-];
-
-export function getCourse(slug: string): Course | undefined {
-  return courses.find((c) => c.slug === slug);
+function toLesson(row: schema.Lesson): Lesson {
+  return {
+    num: row.num,
+    slug: row.slug,
+    title: row.title,
+    summary: row.summary,
+    duration: row.duration,
+    file: row.htmlPath ?? undefined,
+    video: row.videoPath ?? undefined,
+    status: row.status,
+  };
 }
 
-export function getLesson(
+function toCourse(
+  row: schema.Course,
+  lessonRows: schema.Lesson[],
+): Course {
+  return {
+    slug: row.slug,
+    title: row.title,
+    subtitle: row.subtitle,
+    description: row.description,
+    author: row.author,
+    level: row.level as Course["level"],
+    language: row.language as Course["language"],
+    hero: row.hero,
+    tags: row.tags,
+    status: row.status,
+    lessons: lessonRows.map(toLesson).sort((a, b) => a.num - b.num),
+    references: row.references,
+  };
+}
+
+/** Todos los cursos publicados o en generación (para el catálogo). */
+export async function getCourses(): Promise<Course[]> {
+  const db = getDb();
+  const courseRows = await db
+    .select()
+    .from(schema.courses)
+    .orderBy(asc(schema.courses.createdAt));
+  const all = await Promise.all(
+    courseRows.map(async (c) => {
+      const lessonRows = await db
+        .select()
+        .from(schema.lessons)
+        .where(eq(schema.lessons.courseId, c.id));
+      return toCourse(c, lessonRows);
+    }),
+  );
+  return all;
+}
+
+export async function getCourse(slug: string): Promise<Course | undefined> {
+  const db = getDb();
+  const [row] = await db
+    .select()
+    .from(schema.courses)
+    .where(eq(schema.courses.slug, slug))
+    .limit(1);
+  if (!row) return undefined;
+  const lessonRows = await db
+    .select()
+    .from(schema.lessons)
+    .where(eq(schema.lessons.courseId, row.id));
+  return toCourse(row, lessonRows);
+}
+
+export async function getLesson(
   courseSlug: string,
   num: number,
-): Lesson | undefined {
-  const course = getCourse(courseSlug);
+): Promise<Lesson | undefined> {
+  const course = await getCourse(courseSlug);
   return course?.lessons.find((l) => l.num === num);
 }
 
-export function getReference(
+export async function getReference(
   courseSlug: string,
   slug: string,
-): Reference | undefined {
-  const course = getCourse(courseSlug);
+): Promise<Reference | undefined> {
+  const course = await getCourse(courseSlug);
   return course?.references.find((r) => r.slug === slug);
 }

@@ -9,14 +9,14 @@ export default function LessonMedia({
 }: {
   title: string;
   videoSrc: string;
-  iframeSrc: string;
+  iframeSrc: string | null;
 }) {
   const [showReference, setShowReference] = useState(false);
 
   return (
     <div>
       <div className="rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white">
-        {showReference ? (
+        {showReference && iframeSrc ? (
           <iframe
             src={iframeSrc}
             title={title}
@@ -33,17 +33,19 @@ export default function LessonMedia({
         )}
       </div>
 
-      <p className="mt-3 text-sm text-zinc-500 text-center">
-        <button
-          type="button"
-          onClick={() => setShowReference((v) => !v)}
-          className="hover:underline"
-        >
-          {showReference
-            ? "← Volver al video"
-            : "Ver la versión de referencia (texto) →"}
-        </button>
-      </p>
+      {iframeSrc && (
+        <p className="mt-3 text-sm text-zinc-500 text-center">
+          <button
+            type="button"
+            onClick={() => setShowReference((v) => !v)}
+            className="hover:underline"
+          >
+            {showReference
+              ? "← Volver al video"
+              : "Ver la versión de referencia (texto) →"}
+          </button>
+        </p>
+      )}
     </div>
   );
 }

@@ -38,12 +38,16 @@ export async function getCourseContext(course: Course): Promise<string> {
   const cached = cache.get(course.slug);
   if (cached && Date.now() - cached.at < TTL_MS) return cached.text;
 
+  // Lecciones sin `file` todavía se están generando (Sandbox en curso) —
+  // no hay HTML local que leer todavía, se omiten del contexto por ahora.
   const lessons = await Promise.all(
-    course.lessons.map(async (l) => {
-      const p = path.join(contentRoot, course.slug, "lessons", l.file);
-      const body = await readAndClean(p);
-      return `## Lección ${l.num}: ${l.title}\n\n${body}`;
-    }),
+    course.lessons
+      .filter((l) => l.file)
+      .map(async (l) => {
+        const p = path.join(contentRoot, course.slug, "lessons", l.file!);
+        const body = await readAndClean(p);
+        return `## Lección ${l.num}: ${l.title}\n\n${body}`;
+      }),
   );
 
   const references = await Promise.all(

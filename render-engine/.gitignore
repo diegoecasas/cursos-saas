@@ -1,0 +1,19 @@
+node_modules
+dist
+.DS_Store
+.env
+
+# Ignore the output video from Git but not videos you import into src/.
+out
+
+# Entorno Python para generar narración (OmniVoice) y su salida — regenerables
+# desde scripts/generate-narration.py, no hace falta versionarlos.
+.venv-tts
+public/narration
+
+# Log de llamadas a kie.ai (auditoría local) y bytecode de Python — no aportan
+# versionados. Los assets generados en public/generated/ SÍ se versionan:
+# a diferencia del audio, cuestan créditos reales y no son reproducibles
+# exactamente igual si se regeneran (el mismo prompt da un perro distinto).
+_logs
+scripts/__pycache__

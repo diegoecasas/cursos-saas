@@ -1,8 +1,16 @@
 import Link from "next/link";
-import { courses } from "@/content/courses";
+import { getCourses } from "@/content/courses";
 
-export default function Home() {
+export default async function Home() {
+  const courses = await getCourses();
   const featured = courses[0];
+  if (!featured) {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-24 text-center text-zinc-500">
+        Todavía no hay cursos publicados.
+      </div>
+    );
+  }
   return (
     <div>
       {/* Hero */}

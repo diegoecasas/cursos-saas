@@ -13,7 +13,7 @@ type Params = Promise<{ slug: string }>;
 
 export async function GET(_req: NextRequest, { params }: { params: Params }) {
   const { slug } = await params;
-  if (!getCourse(slug)) {
+  if (!(await getCourse(slug))) {
     return Response.json({ error: "Curso no encontrado." }, { status: 404 });
   }
   const ownerId = await getOwnerId();
@@ -37,7 +37,7 @@ export async function GET(_req: NextRequest, { params }: { params: Params }) {
 
 export async function PUT(req: NextRequest, { params }: { params: Params }) {
   const { slug } = await params;
-  if (!getCourse(slug)) {
+  if (!(await getCourse(slug))) {
     return Response.json({ error: "Curso no encontrado." }, { status: 404 });
   }
 

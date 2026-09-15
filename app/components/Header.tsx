@@ -23,6 +23,12 @@ export function Header() {
           >
             Catálogo
           </Link>
+          <Link
+            href="/director"
+            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white"
+          >
+            Director de Cursos
+          </Link>
           <a
             href="https://github.com/diegoecasas/cursos-saas"
             className="hidden sm:inline text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white"

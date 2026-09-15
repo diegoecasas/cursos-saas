@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCourse, courses } from "@/content/courses";
+import { getCourse, getCourses } from "@/content/courses";
 import { DocenteChat } from "./DocenteChat";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,7 @@ type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<{ fromNote?: string }>;
 
 export async function generateStaticParams() {
+  const courses = await getCourses();
   return courses.map((c) => ({ slug: c.slug }));
 }
 
@@ -19,7 +20,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getCourse(slug);
   if (!course) return {};
   return {
     title: `Docente digital · ${course.title}`,
@@ -36,7 +37,7 @@ export default async function ChatPage({
 }) {
   const { slug } = await params;
   const { fromNote } = await searchParams;
-  const course = getCourse(slug);
+  const course = await getCourse(slug);
   if (!course) notFound();
 
   return (

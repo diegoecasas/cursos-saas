@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCourse, courses } from "@/content/courses";
+import { getCourse, getCourses } from "@/content/courses";
 import { Journal } from "./Journal";
 
 type Params = Promise<{ slug: string }>;
 
 export async function generateStaticParams() {
+  const courses = await getCourses();
   return courses.map((c) => ({ slug: c.slug }));
 }
 
@@ -16,7 +17,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getCourse(slug);
   if (!course) return {};
   return {
     title: `Seguimiento · ${course.title}`,
@@ -30,7 +31,7 @@ export default async function SeguimientoPage({
   params: Params;
 }) {
   const { slug } = await params;
-  const course = getCourse(slug);
+  const course = await getCourse(slug);
   if (!course) notFound();
 
   return (
