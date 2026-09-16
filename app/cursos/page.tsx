@@ -20,7 +20,9 @@ export default async function CoursesCatalog() {
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {courses.map((course) => {
-          const isReady = course.status === "published";
+          const readyCount = course.lessons.filter((l) => l.status === "ready").length;
+          const hasReady = readyCount > 0;
+          const allReady = readyCount === course.lessons.length;
           return (
             <Link
               key={course.slug}
@@ -28,20 +30,20 @@ export default async function CoursesCatalog() {
               className="group rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-zinc-400 dark:hover:border-zinc-600 transition"
             >
               <div
-                className={`relative aspect-[16/10] bg-gradient-to-br ${course.hero.from} ${course.hero.to} flex items-center justify-center text-6xl ${isReady ? "" : "opacity-70"}`}
+                className={`relative aspect-[16/10] bg-gradient-to-br ${course.hero.from} ${course.hero.to} flex items-center justify-center text-6xl ${hasReady ? "" : "opacity-70"}`}
               >
                 {course.hero.emoji}
-                {!isReady && (
+                {!allReady && (
                   <span className="absolute top-3 right-3 text-xs font-medium px-2.5 py-1 rounded-full bg-black/40 text-white backdrop-blur-sm">
-                    Muy pronto
+                    {hasReady ? "En progreso" : "Muy pronto"}
                   </span>
                 )}
               </div>
               <div className="p-5">
                 <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">
                   Nivel {course.level} ·{" "}
-                  {isReady
-                    ? `${course.lessons.length} ${course.lessons.length === 1 ? "lección" : "lecciones"}`
+                  {hasReady
+                    ? `${readyCount} de ${course.lessons.length} ${course.lessons.length === 1 ? "lección" : "lecciones"}`
                     : "en preparación"}
                 </p>
                 <h3 className="font-semibold text-lg leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400">

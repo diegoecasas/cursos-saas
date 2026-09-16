@@ -26,6 +26,10 @@ export default async function CoursePage({ params }: { params: Params }) {
   const course = await getCourse(slug);
   if (!course) notFound();
 
+  const readyLessons = course.lessons.filter((l) => l.status === "ready");
+  const hasReadyLessons = readyLessons.length > 0;
+  const allReady = readyLessons.length === course.lessons.length;
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
       <Link
@@ -65,7 +69,7 @@ export default async function CoursePage({ params }: { params: Params }) {
         ))}
       </div>
 
-      {course.status !== "published" ? (
+      {!hasReadyLessons ? (
         <div className="mt-10 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center">
           <p className="text-lg font-medium">Curso disponible muy pronto</p>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
@@ -93,38 +97,70 @@ export default async function CoursePage({ params }: { params: Params }) {
           </div>
 
           <h2 className="text-2xl font-semibold mt-12 mb-4">Lecciones</h2>
+          {!allReady && (
+            <p className="mb-4 text-sm text-zinc-500">
+              {readyLessons.length} de {course.lessons.length} lecciones listas — el
+              resto está en camino.
+            </p>
+          )}
           <ol className="divide-y divide-zinc-200 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-            {course.lessons.map((lesson) => (
-              <li key={lesson.num}>
-                <Link
-                  href={`/cursos/${course.slug}/lecciones/${lesson.num}`}
-                  className="flex items-start gap-4 p-5 hover:bg-zinc-50 dark:hover:bg-zinc-900 group"
-                >
-                  <span className="shrink-0 w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center font-medium">
+            {course.lessons.map((lesson) => {
+              const isReady = lesson.status === "ready";
+              const content = (
+                <>
+                  <span
+                    className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-medium ${
+                      isReady
+                        ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                        : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600"
+                    }`}
+                  >
                     {String(lesson.num).padStart(2, "0")}
                   </span>
                   <span className="flex-1">
-                    <span className="block font-medium group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                    <span
+                      className={`block font-medium ${
+                        isReady
+                          ? "group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                          : "text-zinc-400 dark:text-zinc-600"
+                      }`}
+                    >
                       {lesson.title}
                     </span>
                     <span className="mt-1 block text-sm text-zinc-600 dark:text-zinc-400">
                       {lesson.summary}
                     </span>
                     <span className="mt-2 block text-xs uppercase tracking-wide text-zinc-500">
-                      {lesson.duration}
+                      {isReady ? lesson.duration : "Muy pronto"}
                     </span>
                   </span>
-                  <span className="text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                    →
-                  </span>
-                </Link>
-              </li>
-            ))}
+                  {isReady && (
+                    <span className="text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                      →
+                    </span>
+                  )}
+                </>
+              );
+              return (
+                <li key={lesson.num}>
+                  {isReady ? (
+                    <Link
+                      href={`/cursos/${course.slug}/lecciones/${lesson.num}`}
+                      className="flex items-start gap-4 p-5 hover:bg-zinc-50 dark:hover:bg-zinc-900 group"
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <div className="flex items-start gap-4 p-5 opacity-60">{content}</div>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         </>
       )}
 
-      {course.status === "published" && course.references.length > 0 && (
+      {hasReadyLessons && course.references.length > 0 && (
         <>
           <h2 className="text-2xl font-semibold mt-12 mb-4">Referencia</h2>
           <ul className="grid gap-3 sm:grid-cols-2">
