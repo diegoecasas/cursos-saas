@@ -30,8 +30,8 @@ No pongas "media" (foto/video) en ningún beat — eso se genera después, en un
 Idioma de todo el contenido: ${brief.language === "en" ? "inglés" : "español, tuteo colombiano"}.`,
     prompt: `Brief del curso:
 Tema: ${brief.topic}
-Audiencia/misión: ${brief.audience}
-Objetivos: ${brief.objectives.join("; ")}
+Por qué (misión): ${brief.why}
+Éxito se ve como: ${brief.successLooksLike.join("; ")}
 Restricciones: ${brief.constraints.join("; ") || "ninguna especial"}
 Nivel: ${brief.level}`,
   });

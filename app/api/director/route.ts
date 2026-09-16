@@ -121,8 +121,8 @@ export async function POST(req: NextRequest) {
             .values({
               slug,
               title: brief.topic,
-              subtitle: brief.audience,
-              description: brief.objectives.join(". "),
+              subtitle: brief.why,
+              description: brief.successLooksLike.join(". "),
               author: "Director de Cursos",
               level: brief.level,
               language: brief.language,

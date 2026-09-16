@@ -10,7 +10,8 @@
     "db:enable-pgvector": "dotenv -e .env.local -- tsx db/enable-pgvector.ts",
     "db:push": "dotenv -e .env.local -- drizzle-kit push",
     "db:seed": "dotenv -e .env.local -- tsx db/seed-entrenamiento-perro.ts",
-    "generate:local": "dotenv -e .env.local -- tsx scripts/run-local-generation.ts"
+    "generate:local": "dotenv -e .env.local -- tsx scripts/run-local-generation.ts",
+    "prepare:mission": "dotenv -e .env.local -- tsx scripts/prepare-teach-hardened-workspace.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.48",
